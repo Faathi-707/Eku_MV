@@ -4,6 +4,8 @@
     <a href="{{ url('/') }}" @class(['active' => request()->is('/')])>Map</a>
     <a href="{{ url('/predict') }}" @class(['active' => request()->is('predict')])>Predict</a>
     <a href="{{ url('/notification') }}" @class(['active' => request()->is('notification')])>Notification</a>
+    <a href="{{ url('/disruptions') }}" @class(['active' => request()->is('disruptions')])>Disruptions</a>
+    <a href="{{ url('/profile') }}" @class(['active' => request()->is('profile')])>Profile</a>
   </div>
 </nav>
 

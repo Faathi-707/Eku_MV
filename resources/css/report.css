@@ -1,0 +1,19 @@
+/* Add to resources/css/report.css */
+.map-canvas-bg {
+    background: radial-gradient(circle at center, #0b3464 0%, #061830 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.map-tool-btn {
+    background: rgba(11, 40, 79, 0.85);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #94a3b8;
+    transition: all 0.2s ease;
+}
+
+.map-tool-btn:hover, .map-tool-btn.active {
+    background: #00d2ff;
+    color: #071930;
+    border-color: #00d2ff;
+}
