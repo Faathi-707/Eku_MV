@@ -32,7 +32,7 @@
 <body class="min-h-screen flex flex-col">
 
     <!-- Navigation Bar -->
-    @include('navbar')
+    @include('Both.navbar')
 
     <!-- Main Content Container -->
     <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-grow space-y-6">
