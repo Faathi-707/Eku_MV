@@ -27,7 +27,11 @@
       "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan test --compact 2>&1 | Select-Object -Last 3)",
       "PowerShell(\\(Get-Content resources/views/Both/dashboard.blade.php -Raw\\) -split \"`n\" | ForEach-Object { if \\($_.Length -gt 1000\\) { \"$\\($_.Substring\\(0,80\\)\\)... [LEN=$\\($_.Length\\)]\" } else { $_ } } | Select-Object -Skip 313 -First 5)",
       "PowerShell($line = \\(Get-Content resources/views/Both/dashboard.blade.php -TotalCount 316\\)[314]; $line.Substring\\(0, 60\\); \"...length: $\\($line.Length\\)\")",
-      "PowerShell($line = \\(Get-Content resources/views/Both/dashboard.blade.php -TotalCount 316\\)[314]; Set-Content -Path public/maldives-data.js -Value $line -Encoding UTF8; \\(Get-Item public/maldives-data.js\\).Length)"
+      "PowerShell($line = \\(Get-Content resources/views/Both/dashboard.blade.php -TotalCount 316\\)[314]; Set-Content -Path public/maldives-data.js -Value $line -Encoding UTF8; \\(Get-Item public/maldives-data.js\\).Length)",
+      "PowerShell($f = Get-Content \"resources/views/Both/Underserved Islands Heat Map \\(1\\).html\"; \"Total lines: $\\($f.Count\\)\"; for \\($i=0; $i -lt [Math]::Min\\(30, $f.Count\\); $i++\\) { if \\($f[$i].Length -gt 300\\) { \"L$\\($i+1\\) [LEN=$\\($f[$i].Length\\)]: $\\($f[$i].Substring\\(0,120\\)\\)...\" } else { \"L$\\($i+1\\): $\\($f[$i]\\)\" } })",
+      "PowerShell($f = Get-Content \"resources/views/Both/Underserved Islands Heat Map \\(1\\).html\"; for \\($i=185; $i -lt 230; $i++\\) { if \\($f[$i].Length -gt 400\\) { \"L$\\($i+1\\) [LEN=$\\($f[$i].Length\\)]: $\\($f[$i].Substring\\(0,160\\)\\)...\" } else { \"L$\\($i+1\\): $\\($f[$i]\\)\" } })",
+      "PowerShell(Rename-Item \"resources/views/Both/Underserved Islands Heat Map \\(1\\).html\" dashboard.blade.php)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan view:clear; php artisan test --compact --filter=\"redirects guests to login\" 2>&1 | Select-Object -Last 3)"
     ]
   }
 }
