@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::view('/', 'Both.dashboard')->name('dashboard');
 
     Route::post('/api/predict', [PredictionController::class, 'predict'])->name('api.predict');
+    Route::post('/api/forecast', [PredictionController::class, 'forecast'])->name('api.forecast');
 
     Route::middleware('role:citizen')->group(function () {
         Route::view('/predict', 'Citizen.Predict')->name('predict');

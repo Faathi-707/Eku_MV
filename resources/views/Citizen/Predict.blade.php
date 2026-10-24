@@ -9,7 +9,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/maldives-data.js" defer></script>
+
     <!-- Custom CSS File via Vite -->
     @vite(['resources/css/predict.css'])
     
@@ -106,10 +110,28 @@
             </form>
         </section>
 
-        <!-- Main Dashboard Split Grid -->
+        <!-- Map + Analysis side-by-side layout -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-            <!-- LEFT COLUMN: Marine Conditions & Sea Alerts -->
+            <!-- NEW LEFT COLUMN: Live suppression map -->
+            <section class="glass-card rounded-2xl p-5 shadow-2xl lg:sticky lg:top-6 h-fit">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-map-location-dot text-cyan-400 text-lg"></i>
+                        <h2 class="font-bold text-lg text-white">Live Route Suppression</h2>
+                    </div>
+                    <span id="mapStatus" class="text-xs text-slate-400">Loading…</span>
+                </div>
+                <div id="forecastMap" class="rounded-xl overflow-hidden" style="height:520px;background:#061830"></div>
+                <div class="flex items-center gap-4 mt-3 text-xs text-slate-300">
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span> Low (&lt;20%)</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span> Medium (20–50%)</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> High (&gt;50%)</span>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-2">% of trips suppressed vs normal, from today's weather forecast.</p>
+            </section>
+
+            <!-- RIGHT COLUMN: Original analysis cards stacked -->
             <div class="space-y-6">
                 
                 <!-- Current Marine Conditions Card -->
@@ -240,11 +262,6 @@
                         </div>
                     </div>
                 </section>
-
-            </div>
-
-            <!-- RIGHT COLUMN: AI Prediction & Route Recommendations -->
-            <div class="space-y-6">
 
                 <!-- AI Prediction Card -->
                 <section class="glass-card rounded-2xl p-6 shadow-xl">
@@ -417,6 +434,123 @@
     <!-- Interactive JS Hook -->
     <script>
         const CSRF = document.querySelector('meta[name="csrf-token"]')?.content;
+        const FORECAST_URL = "{{ route('api.forecast') }}";
+
+        function suppressionColor(pct) {
+            if (pct == null) return '#64748b';
+            if (pct > 50) return '#f43f5e';
+            if (pct > 20) return '#f59e0b';
+            return '#34d399';
+        }
+
+        async function initForecastMap() {
+            const el = document.getElementById('forecastMap');
+            const status = document.getElementById('mapStatus');
+            if (!el || typeof L === 'undefined') return;
+
+            el.style.background = '#0d1c23';
+            const map = L.map(el, {
+                zoomControl: true,
+                attributionControl: false,
+                minZoom: 5,
+                maxZoom: 12,
+                zoomSnap: 0.5,
+            }).setView([3.3, 73.2], 7);
+
+            // Atoll shapes from the dashboard dataset
+            if (window.D) {
+                const atollStyle = { color: '#4c6f96', weight: 0.8, fillColor: '#14273a', fillOpacity: 1, interactive: false };
+                (D.atollShapes || []).forEach(s => L.polygon(s, atollStyle).addTo(map));
+                const outlineStyle = { color: '#2b4663', weight: 1, fillColor: '#16293a', fillOpacity: 0.8, interactive: false };
+                Object.values(D.outlines || {}).forEach(group => {
+                    (group || []).forEach(s => L.polygon(s, outlineStyle).addTo(map));
+                });
+            }
+
+            const weather = {
+                era5_wind_kmh: 22.5,
+                era5_swh_m: 1.4,
+                era5_tp_mm: 0.3,
+                era5_wind_percentile: 0.5,
+            };
+            const today = new Date().toISOString().slice(0, 10);
+
+            let routes = [];
+            try {
+                routes = await (await fetch('/routes.json', { cache: 'no-store' })).json();
+            } catch (e) {
+                status.textContent = 'routes.json missing';
+                return;
+            }
+            if (!routes.length) {
+                status.textContent = 'No routes defined';
+                return;
+            }
+
+            let forecast;
+            try {
+                const res = await fetch(FORECAST_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': CSRF,
+                    },
+                    body: JSON.stringify({ date: today, weather }),
+                });
+                forecast = await res.json();
+            } catch (e) {
+                status.textContent = 'Service unreachable';
+                return;
+            }
+
+            if (forecast.status !== 'ok') {
+                status.textContent = 'Model unavailable';
+                return;
+            }
+
+            const byId = Object.fromEntries((forecast.rows || []).map(r => [String(r.route_id), r]));
+            const bounds = [];
+            let drawn = 0;
+
+            routes.forEach(r => {
+                const row = byId[String(r.route_id)];
+                const latlngs = [[r.start_lat, r.start_lon], [r.end_lat, r.end_lon]];
+                bounds.push(...latlngs);
+                const color = suppressionColor(row?.suppression_pct);
+
+                const line = L.polyline(latlngs, {
+                    color, weight: 5, opacity: 0.85,
+                }).addTo(map);
+
+                const pct = row?.suppression_pct;
+                const delta = row?.per_trip_delta;
+                const expected = row?.expected_trips;
+                const normal = row?.normal_trips;
+                const unknown = row && row.route_known === false;
+
+                line.bindPopup(`
+                    <div style="font-family:system-ui;color:#0f172a">
+                        <div style="font-weight:700;margin-bottom:4px">${r.label || r.route_id}</div>
+                        ${row ? `
+                            <div style="font-size:12px">Suppression: <strong>${pct != null ? pct.toFixed(0) + '%' : '—'}</strong></div>
+                            <div style="font-size:12px">Trip duration: <strong>${delta != null ? (delta * 100).toFixed(1) + '%' : '—'}</strong> vs normal</div>
+                            <div style="font-size:12px">Expected trips: <strong>${expected != null ? expected.toFixed(1) : '—'}</strong> (normal ${normal != null ? normal.toFixed(1) : '—'})</div>
+                            ${unknown ? '<div style="font-size:11px;color:#92400e;margin-top:4px">Limited data — estimate only</div>' : ''}
+                        ` : '<div style="font-size:12px;color:#64748b">No forecast available for this route.</div>'}
+                    </div>
+                `);
+
+                if (row) drawn++;
+            });
+
+            if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
+            status.textContent = drawn > 0
+                ? `${drawn} / ${routes.length} routes scored`
+                : `0 routes matched the model (populate routes.json with real route_ids)`;
+        }
+
+        window.addEventListener('load', initForecastMap);
 
         async function handleAnalysis(event) {
             event.preventDefault();
@@ -424,45 +558,60 @@
             const to = document.getElementById('to').value;
             const depDate = document.getElementById('departureDate').value;
             const banner = document.getElementById('predictionBanner');
+            const routeId = `${from}-${to}`;
 
             banner.classList.remove('hidden');
             banner.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid fa-spinner fa-spin text-cyan-400"></i> Analysing ${from} → ${to}…</div>`;
 
-            // TODO: replace these placeholder weather features with values from a real weather feed.
-            const features = {
+            // TODO: replace these placeholder weather values with a real weather feed.
+            const weather = {
                 era5_wind_kmh: 22.5,
                 era5_swh_m: 1.4,
                 era5_tp_mm: 0.3,
-                median_path_length_km: 12.0,
-                day_of_week: new Date(depDate).getDay(),
+                era5_wind_percentile: 0.5,
             };
 
             try {
-                const res = await fetch("{{ route('api.predict') }}", {
+                const res = await fetch("{{ route('api.forecast') }}", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': CSRF,
                     },
-                    body: JSON.stringify({ route_id: `${from}-${to}`, features }),
+                    body: JSON.stringify({ date: depDate, weather, routes: [routeId] }),
                 });
                 const data = await res.json();
 
-                if (data.status === 'ok') {
-                    const pct = data.headline_delta_pct;
-                    const sign = pct >= 0 ? '+' : '';
-                    const warn = data.route_known ? '' : '<div class="text-amber-300 text-xs mt-1"><i class="fa-solid fa-triangle-exclamation"></i> Limited data for this route — estimate only.</div>';
-                    banner.innerHTML = `
-                        <div class="font-bold text-white">${from} → ${to}</div>
-                        <div class="text-2xl font-bold text-cyan-300 mt-1">${sign}${pct.toFixed(1)}% vs usual</div>
-                        <div class="text-xs text-slate-400 mt-1">Headline uses route-mean baseline (model: ${(data.predictions.tree_model * 100).toFixed(1)}%).</div>
-                        ${warn}`;
-                } else if (data.status === 'missing_features') {
-                    banner.innerHTML = `<div class="text-amber-300">Missing weather inputs: ${(data.missing_features || []).join(', ')}</div>`;
-                } else {
+                if (data.status !== 'ok' || !data.rows?.length) {
                     banner.innerHTML = `<div class="text-rose-300">Weather prediction unavailable right now.</div>`;
+                    return;
                 }
+
+                const row = data.rows[0];
+                const delta = (row.per_trip_delta ?? 0) * 100;
+                const deltaSign = delta >= 0 ? '+' : '';
+                const suppression = row.suppression_pct;
+                const expected = row.expected_trips;
+                const normal = row.normal_trips;
+                const warn = row.route_known ? '' : '<div class="text-amber-300 text-xs mt-1"><i class="fa-solid fa-triangle-exclamation"></i> Limited data for this route — estimate only.</div>';
+
+                let tripsLine = '';
+                if (expected !== null && normal !== null) {
+                    tripsLine = `<div class="text-xs text-slate-400 mt-2">Expected trips: <strong class="text-white">${expected.toFixed(1)}</strong> vs normal <strong class="text-white">${normal.toFixed(1)}</strong></div>`;
+                }
+                let suppressLine = '';
+                if (suppression !== null) {
+                    const color = suppression > 50 ? 'text-rose-300' : suppression > 20 ? 'text-amber-300' : 'text-emerald-300';
+                    suppressLine = `<div class="${color} text-sm font-semibold mt-1">${suppression.toFixed(0)}% of trips likely suppressed</div>`;
+                }
+
+                banner.innerHTML = `
+                    <div class="font-bold text-white">${from} → ${to}</div>
+                    <div class="text-2xl font-bold text-cyan-300 mt-1">${deltaSign}${delta.toFixed(1)}% trip duration</div>
+                    ${suppressLine}
+                    ${tripsLine}
+                    ${warn}`;
             } catch (e) {
                 banner.innerHTML = `<div class="text-rose-300">Could not reach prediction service.</div>`;
             }

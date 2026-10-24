@@ -1,0 +1,178 @@
+[
+  {
+    "route_id": 0,
+    "start_lat": 5.48,
+    "start_lon": 73.39,
+    "end_lat": 5.55,
+    "end_lon": 73.45,
+    "label": "place 0 \u2192 place 3",
+    "n_trips": 526,
+    "median_duration_min": 43.0,
+    "median_path_length_km": 10.236629249540721
+  },
+  {
+    "route_id": 1,
+    "start_lat": 6.76,
+    "start_lon": 73.15,
+    "end_lat": 6.87,
+    "end_lon": 73.1,
+    "label": "place 1 \u2192 place 4",
+    "n_trips": 1256,
+    "median_duration_min": 53.0,
+    "median_path_length_km": 13.419602350172687
+  },
+  {
+    "route_id": 2,
+    "start_lat": 6.84,
+    "start_lon": 73.03,
+    "end_lat": 6.93,
+    "end_lon": 73.11,
+    "label": "place 2 \u2192 place 7",
+    "n_trips": 738,
+    "median_duration_min": 53.0,
+    "median_path_length_km": 13.351059004380703
+  },
+  {
+    "route_id": 3,
+    "start_lat": 5.55,
+    "start_lon": 73.45,
+    "end_lat": 5.48,
+    "end_lon": 73.39,
+    "label": "place 3 \u2192 place 0",
+    "n_trips": 504,
+    "median_duration_min": 44.0,
+    "median_path_length_km": 10.236639500545134
+  },
+  {
+    "route_id": 4,
+    "start_lat": 6.87,
+    "start_lon": 73.1,
+    "end_lat": 6.76,
+    "end_lon": 73.15,
+    "label": "place 4 \u2192 place 1",
+    "n_trips": 1229,
+    "median_duration_min": 53.0,
+    "median_path_length_km": 13.419602360979882
+  },
+  {
+    "route_id": 5,
+    "start_lat": 6.82,
+    "start_lon": 73.13,
+    "end_lat": 6.92,
+    "end_lon": 73.16,
+    "label": "place 5 \u2192 place 6",
+    "n_trips": 945,
+    "median_duration_min": 47.0,
+    "median_path_length_km": 11.60493595274016
+  },
+  {
+    "route_id": 6,
+    "start_lat": 6.92,
+    "start_lon": 73.16,
+    "end_lat": 6.82,
+    "end_lon": 73.13,
+    "label": "place 6 \u2192 place 5",
+    "n_trips": 921,
+    "median_duration_min": 47.0,
+    "median_path_length_km": 11.604935957119558
+  },
+  {
+    "route_id": 7,
+    "start_lat": 6.93,
+    "start_lon": 73.11,
+    "end_lat": 6.84,
+    "end_lon": 73.03,
+    "label": "place 7 \u2192 place 2",
+    "n_trips": 737,
+    "median_duration_min": 53.0,
+    "median_path_length_km": 13.351059085465412
+  },
+  {
+    "route_id": 8,
+    "start_lat": 5.42,
+    "start_lon": 73.45,
+    "end_lat": 5.5,
+    "end_lon": 73.53,
+    "label": "place 8 \u2192 place 9",
+    "n_trips": 665,
+    "median_duration_min": 50.0,
+    "median_path_length_km": 12.556108614133459
+  },
+  {
+    "route_id": 9,
+    "start_lat": 5.5,
+    "start_lon": 73.53,
+    "end_lat": 5.42,
+    "end_lon": 73.45,
+    "label": "place 9 \u2192 place 8",
+    "n_trips": 676,
+    "median_duration_min": 50.0,
+    "median_path_length_km": 12.556108614133459
+  },
+  {
+    "route_id": 10,
+    "start_lat": 0.51,
+    "start_lon": 73.37,
+    "end_lat": 0.44,
+    "end_lon": 73.31,
+    "label": "place 10 \u2192 place 11",
+    "n_trips": 731,
+    "median_duration_min": 43.0,
+    "median_path_length_km": 10.256581870858625
+  },
+  {
+    "route_id": 11,
+    "start_lat": 0.44,
+    "start_lon": 73.31,
+    "end_lat": 0.51,
+    "end_lon": 73.37,
+    "label": "place 11 \u2192 place 10",
+    "n_trips": 736,
+    "median_duration_min": 43.0,
+    "median_path_length_km": 10.25658159057133
+  },
+  {
+    "route_id": 12,
+    "start_lat": 0.78,
+    "start_lon": 73.28,
+    "end_lat": 0.71,
+    "end_lon": 73.21,
+    "label": "place 12 \u2192 place 13",
+    "n_trips": 513,
+    "median_duration_min": 45.0,
+    "median_path_length_km": 11.012224298653427
+  },
+  {
+    "route_id": 13,
+    "start_lat": 0.71,
+    "start_lon": 73.21,
+    "end_lat": 0.78,
+    "end_lon": 73.28,
+    "label": "place 13 \u2192 place 12",
+    "n_trips": 529,
+    "median_duration_min": 45.0,
+    "median_path_length_km": 11.012224298653427
+  },
+  {
+    "route_id": 14,
+    "start_lat": 5.9399999999999995,
+    "start_lon": 73.32,
+    "end_lat": 5.8500000000000005,
+    "end_lon": 73.26,
+    "label": "place 14 \u2192 place 15",
+    "n_trips": 389,
+    "median_duration_min": 49.0,
+    "median_path_length_km": 12.011963622527766
+  },
+  {
+    "route_id": 15,
+    "start_lat": 5.8500000000000005,
+    "start_lon": 73.26,
+    "end_lat": 5.9399999999999995,
+    "end_lon": 73.32,
+    "label": "place 15 \u2192 place 14",
+    "n_trips": 359,
+    "median_duration_min": 49.0,
+    "median_path_length_km": 12.01196363283475
+  }
+]

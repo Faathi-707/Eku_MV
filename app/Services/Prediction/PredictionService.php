@@ -69,6 +69,36 @@ class PredictionService
         }
     }
 
+    /**
+     * @param  array<string, float|int>  $weather
+     * @param  list<string>|null  $routes
+     */
+    public function forecast(string $date, array $weather, ?array $routes = null): ForecastResult
+    {
+        try {
+            $body = ['date' => $date, 'weather' => $weather];
+            if ($routes !== null) {
+                $body['routes'] = $routes;
+            }
+
+            Log::info('Model service /forecast request', ['body' => $body]);
+            $response = $this->client()->post('/forecast', $body);
+            Log::info('Model service /forecast response', [
+                'status' => $response->status(),
+                'body' => mb_substr($response->body(), 0, 500),
+            ]);
+
+            return ForecastResult::ok($response->throw()->json());
+        } catch (ConnectionException|RequestException $e) {
+            Log::warning('Model service /forecast failed', [
+                'date' => $date,
+                'message' => $e->getMessage(),
+            ]);
+
+            return ForecastResult::unavailable();
+        }
+    }
+
     private function client(): PendingRequest
     {
         return Http::baseUrl($this->baseUrl)

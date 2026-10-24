@@ -80,3 +80,62 @@ test('validation rejects non-numeric features', function () {
         ->assertStatus(422)
         ->assertJsonValidationErrors('features.era5_wind_kmh');
 });
+
+test('guests cannot call the forecast endpoint', function () {
+    $this->postJson(route('api.forecast'), [
+        'date' => '2026-03-15',
+        'weather' => ['era5_wind_kmh' => 20],
+    ])->assertStatus(401);
+});
+
+test('authenticated users receive forecast rows', function () {
+    Http::fake([
+        'model.test/forecast' => Http::response([
+            'date' => '2026-03-15',
+            'per_trip_target' => 'trip_delta_duration',
+            'count_target' => 'trip_count',
+            'rows' => [[
+                'route_id' => 'A-B',
+                'route_known' => true,
+                'expected_trips' => 1.2,
+                'normal_trips' => 2.5,
+                'suppression_pct' => 52.0,
+                'per_trip_delta' => 0.08,
+                'per_trip_baseline' => 0.05,
+            ]],
+        ], 200),
+    ]);
+
+    $this->actingAs(User::factory()->create())
+        ->postJson(route('api.forecast'), [
+            'date' => '2026-03-15',
+            'weather' => ['era5_wind_kmh' => 20, 'era5_swh_m' => 1.5, 'era5_tp_mm' => 0.2],
+            'routes' => ['A-B'],
+        ])
+        ->assertOk()
+        ->assertJsonPath('status', 'ok')
+        ->assertJsonPath('rows.0.route_id', 'A-B')
+        ->assertJsonPath('rows.0.suppression_pct', 52);
+});
+
+test('forecast unavailable surfaces as 503', function () {
+    Http::fake(['model.test/forecast' => Http::response([], 500)]);
+
+    $this->actingAs(User::factory()->create())
+        ->postJson(route('api.forecast'), [
+            'date' => '2026-03-15',
+            'weather' => ['era5_wind_kmh' => 20],
+        ])
+        ->assertStatus(503)
+        ->assertJsonPath('status', 'unavailable');
+});
+
+test('forecast validation rejects bad date format', function () {
+    $this->actingAs(User::factory()->create())
+        ->postJson(route('api.forecast'), [
+            'date' => '15/03/2026',
+            'weather' => ['era5_wind_kmh' => 20],
+        ])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors('date');
+});

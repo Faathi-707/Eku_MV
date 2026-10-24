@@ -63,3 +63,57 @@ test('predict returns unavailable on 500', function () {
 
     expect($result->status)->toBe(PredictionStatus::Unavailable);
 });
+
+test('forecast returns ok result with parsed route rows and caches', function () {
+    Http::fake([
+        'model.test/forecast' => Http::response([
+            'date' => '2026-03-15',
+            'per_trip_target' => 'trip_delta_duration',
+            'count_target' => 'trip_count',
+            'rows' => [[
+                'route_id' => 'R-001',
+                'route_known' => true,
+                'expected_trips' => 0.4,
+                'normal_trips' => 3.1,
+                'suppression_pct' => 87.1,
+                'per_trip_delta' => 0.18,
+                'per_trip_baseline' => 0.1,
+            ]],
+        ], 200),
+    ]);
+
+    $service = app(PredictionService::class);
+    $weather = ['era5_wind_kmh' => 28.1, 'era5_swh_m' => 2.0, 'era5_tp_mm' => 0.5];
+
+    $first = $service->forecast('2026-03-15', $weather, ['R-001']);
+    $second = $service->forecast('2026-03-15', $weather, ['R-001']);
+
+    expect($first->status)->toBe(PredictionStatus::Ok)
+        ->and($first->rows)->toHaveCount(1)
+        ->and($first->rows[0]->routeId)->toBe('R-001')
+        ->and($first->rows[0]->suppressionPct)->toBe(87.1)
+        ->and($first->rows[0]->perTripDelta)->toBe(0.18)
+        ->and($second->rows[0]->routeId)->toBe('R-001');
+
+    Http::assertSentCount(1);
+});
+
+test('forecast returns unavailable when service is down', function () {
+    Http::fake([
+        'model.test/forecast' => Http::response([], 500),
+    ]);
+
+    $result = app(PredictionService::class)->forecast('2026-03-15', ['era5_wind_kmh' => 1]);
+
+    expect($result->status)->toBe(PredictionStatus::Unavailable)
+        ->and($result->rows)->toBe([]);
+});
+
+test('forecast sends routes filter when provided', function () {
+    Http::fake(['model.test/forecast' => Http::response(['rows' => []], 200)]);
+
+    app(PredictionService::class)->forecast('2026-03-15', ['era5_wind_kmh' => 1], ['A-B', 'C-D']);
+
+    Http::assertSent(fn ($req) => $req->url() === 'http://model.test/forecast'
+        && $req['routes'] === ['A-B', 'C-D']);
+});

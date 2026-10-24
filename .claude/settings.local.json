@@ -20,7 +20,14 @@
       "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan test --compact 2>&1 | Select-Object -Last 5)",
       "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; vendor/bin/pint --dirty --format agent 2>&1 | Select-Object -Last 3; php artisan test --compact 2>&1 | Select-Object -Last 5)",
       "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan migrate:fresh --no-interaction 2>&1 | Select-Object -Last 10; vendor/bin/pint --dirty --format agent 2>&1 | Select-Object -Last 3; php artisan test --compact 2>&1 | Select-Object -Last 5)",
-      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan view:clear; php artisan test --compact 2>&1 | Select-Object -Last 5)"
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan view:clear; php artisan test --compact 2>&1 | Select-Object -Last 5)",
+      "PowerShell(git add app/ config/ database/ resources/ routes/ tests/)",
+      "PowerShell(git push 2>&1)",
+      "PowerShell(git push --set-upstream origin ver2 2>&1)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan test --compact 2>&1 | Select-Object -Last 3)",
+      "PowerShell(\\(Get-Content resources/views/Both/dashboard.blade.php -Raw\\) -split \"`n\" | ForEach-Object { if \\($_.Length -gt 1000\\) { \"$\\($_.Substring\\(0,80\\)\\)... [LEN=$\\($_.Length\\)]\" } else { $_ } } | Select-Object -Skip 313 -First 5)",
+      "PowerShell($line = \\(Get-Content resources/views/Both/dashboard.blade.php -TotalCount 316\\)[314]; $line.Substring\\(0, 60\\); \"...length: $\\($line.Length\\)\")",
+      "PowerShell($line = \\(Get-Content resources/views/Both/dashboard.blade.php -TotalCount 316\\)[314]; Set-Content -Path public/maldives-data.js -Value $line -Encoding UTF8; \\(Get-Item public/maldives-data.js\\).Length)"
     ]
   }
 }

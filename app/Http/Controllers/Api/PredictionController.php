@@ -35,4 +35,29 @@ class PredictionController extends Controller
             PredictionStatus::Unavailable => 503,
         });
     }
+
+    public function forecast(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'date' => ['required', 'date_format:Y-m-d'],
+            'weather' => ['required', 'array'],
+            'weather.*' => ['numeric'],
+            'routes' => ['nullable', 'array'],
+            'routes.*' => ['string', 'max:64'],
+        ]);
+
+        $result = $this->service->forecast(
+            $data['date'],
+            $data['weather'],
+            $data['routes'] ?? null,
+        );
+
+        return response()->json([
+            'status' => $result->status->value,
+            'date' => $result->date,
+            'per_trip_target' => $result->perTripTarget,
+            'count_target' => $result->countTarget,
+            'rows' => array_map(fn ($row) => $row->toArray(), $result->rows),
+        ], $result->status === PredictionStatus::Ok ? 200 : 503);
+    }
 }
