@@ -3,9 +3,7 @@
 use App\Models\User;
 
 test('login screen can be rendered', function () {
-    $response = $this->get('/login');
-
-    $response->assertStatus(200);
+    $this->get('/login')->assertStatus(200);
 });
 
 test('users can authenticate using the login screen', function () {
@@ -31,11 +29,21 @@ test('users can not authenticate with invalid password', function () {
     $this->assertGuest();
 });
 
+test('unapproved officials cannot authenticate', function () {
+    $user = User::factory()->unapproved()->create();
+
+    $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'password',
+    ])->assertSessionHasErrors('email');
+
+    $this->assertGuest();
+});
+
 test('users can logout', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->post('/logout');
+    $this->actingAs($user)->post('/logout')->assertRedirect(route('login'));
 
     $this->assertGuest();
-    $response->assertRedirect('/');
 });

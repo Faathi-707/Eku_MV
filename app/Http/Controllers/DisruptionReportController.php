@@ -19,12 +19,12 @@ class DisruptionReportController extends Controller
             ->latest('updated_at')
             ->get();
 
-        return view('Disruptions', ['drafts' => $drafts]);
+        return view('Official.Disruptions', ['drafts' => $drafts]);
     }
 
     public function create(): View
     {
-        return view('report', ['report' => null]);
+        return view('Official.report', ['report' => null]);
     }
 
     public function store(StoreDisruptionReportRequest $request): RedirectResponse
@@ -38,7 +38,7 @@ class DisruptionReportController extends Controller
         ]);
 
         return redirect()
-            ->route($publishing ? 'notification' : 'disruptions')
+            ->route('disruptions')
             ->with('status', $publishing ? 'Report published.' : 'Draft saved.');
     }
 
@@ -46,7 +46,7 @@ class DisruptionReportController extends Controller
     {
         $this->authorize('update', $disruptionReport);
 
-        return view('report', ['report' => $disruptionReport]);
+        return view('Official.report', ['report' => $disruptionReport]);
     }
 
     public function update(StoreDisruptionReportRequest $request, DisruptionReport $disruptionReport): RedirectResponse
@@ -62,7 +62,7 @@ class DisruptionReportController extends Controller
         ]);
 
         return redirect()
-            ->route($publishing ? 'notification' : 'disruptions')
+            ->route('disruptions')
             ->with('status', $publishing ? 'Report published.' : 'Draft updated.');
     }
 

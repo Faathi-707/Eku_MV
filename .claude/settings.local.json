@@ -18,7 +18,9 @@
       "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan migrate:fresh --no-interaction 2>&1 | Select-Object -Last 10; php artisan test --compact tests/Feature/DisruptionReportTest.php 2>&1 | Select-Object -Last 5)",
       "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; vendor/bin/pint --dirty --format agent 2>&1 | Select-Object -Last 5; php artisan test --compact 2>&1 | Select-Object -Last 5)",
       "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan test --compact 2>&1 | Select-Object -Last 5)",
-      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; vendor/bin/pint --dirty --format agent 2>&1 | Select-Object -Last 3; php artisan test --compact 2>&1 | Select-Object -Last 5)"
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; vendor/bin/pint --dirty --format agent 2>&1 | Select-Object -Last 3; php artisan test --compact 2>&1 | Select-Object -Last 5)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan migrate:fresh --no-interaction 2>&1 | Select-Object -Last 10; vendor/bin/pint --dirty --format agent 2>&1 | Select-Object -Last 3; php artisan test --compact 2>&1 | Select-Object -Last 5)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan view:clear; php artisan test --compact 2>&1 | Select-Object -Last 5)"
     ]
   }
 }
