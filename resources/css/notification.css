@@ -1,0 +1,35 @@
+/* resources/css/notifications.css */
+:root {
+    --panel: #082242;
+    --line: #0d3b73;
+    --ink: #ffffff;
+    --muted: #94a3b8;
+    --chip: #0d3b73;
+    --focus: #38bdf8;
+    --f-display: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+    background-color: #071930;
+    color: var(--ink);
+    font-family: var(--f-display);
+}
+
+/* Glassmorphism containers matching the design */
+.glass-card {
+    background: rgba(10, 35, 66, 0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(30, 64, 115, 0.6);
+}
+
+/* Individual Notification Row Styling */
+.notification-item {
+    background: rgba(12, 38, 72, 0.6);
+    border: 1px solid rgba(30, 64, 115, 0.5);
+    transition: all 0.2s ease;
+}
+
+.notification-item:hover {
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(15, 45, 85, 0.8);
+}

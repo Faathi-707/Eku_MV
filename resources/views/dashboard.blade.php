@@ -37,7 +37,7 @@
 html,body{height:100%}
 body{background:var(--panel);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
 *{box-sizing:border-box}
-.app{height:100%;display:grid;grid-template-columns:minmax(300px,380px) 1fr}
+.app{height:calc(100% - 52px);display:grid;grid-template-columns:minmax(300px,380px) 1fr}
 .panel{display:flex;flex-direction:column;min-height:0;min-width:0;border-right:1px solid var(--line);background:var(--panel);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px}
 .head{padding-block:16px 10px;display:flex;flex-direction:column;gap:10px}
@@ -55,10 +55,6 @@ h1{font-family:var(--f-display);font-weight:700;font-size:28px;letter-spacing:.0
 .results .k{color:var(--muted);font-size:12px;white-space:nowrap}
 .results .none{color:var(--muted);cursor:default}
 .lbl{font-family:var(--f-display);font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:7px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer}
-.chip[aria-pressed="false"]{opacity:.45;text-decoration:line-through}
-.chip:focus-visible,.btn:focus-visible,.item:focus-visible,.tab:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .sw{width:18px;height:0;border-top:3px solid currentColor;display:inline-block}
 .sw.ferry{color:var(--ferry)}.sw.rtl{color:var(--rtl)}.sw.gps{color:var(--gps)}.sw.atoll{color:var(--atoll)}.sw.speed{color:var(--speed)}.sw.road{color:var(--road);border-top-style:dashed}
 .dot{width:11px;height:11px;border-radius:50%;background:var(--c);display:inline-block;flex:none;box-shadow:0 0 0 1.5px var(--dot-stroke),0 0 0 2.5px color-mix(in srgb,var(--c) 60%,transparent)}
@@ -240,37 +236,77 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
   .sub{display:none}
   .toggle{display:inline-flex;font:inherit;font-size:13px;background:var(--chip);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:4px 12px;cursor:pointer;white-space:nowrap}
 }
+
+@media (min-width:761px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  #map{min-height:0}
+  .panel{border-right:0;border-bottom:1px solid var(--line);padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .titlerow{display:none}
+
+  /* controls in one horizontal row */
+  .head{flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px 14px;padding-block:10px}
+  .search{flex:1 1 280px;max-width:360px}
+  .filters{flex:1 1 auto;flex-direction:row!important;flex-wrap:wrap;align-items:center;gap:10px 14px!important}
+  .filters .row2{flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px}
+  .filters select{width:auto;min-width:200px}
+  .filters .route-type{min-width:150px}
+.search-and-filters { display: flex; align-items: center; gap: 10px; }
+.search-and-filters .search { flex-grow: 1; }
+.search-and-filters .row2 { flex-direction: row; gap: 10px; }
+
+  /* route list flows sideways in columns instead of one long vertical list */
+  .body{flex:none;height:24vh;min-height:150px;column-width:290px;column-gap:24px;column-fill:auto;overflow:auto;padding-block:10px}
+  .body .item{break-inside:avoid}
+  .body .lbl{break-after:avoid}
+}
+
+/* route-type dropdown */
+.dd{position:relative;min-width:0}
+.dd summary{list-style:none;cursor:pointer;font:inherit;font-size:14px;padding:7px 30px 7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--sea);color:var(--ink);white-space:nowrap;position:relative;user-select:none}
+.dd summary::-webkit-details-marker{display:none}
+.dd summary::after{content:"";position:absolute;right:11px;top:50%;width:6px;height:6px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg)}
+.dd summary:focus-visible,.dd[open] summary{outline:2px solid var(--focus);outline-offset:1px}
+.dd-menu{position:absolute;z-index:2000;top:calc(100% + 4px);left:0;min-width:240px;max-width:90vw;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:4px}
+.dd-opt{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:6px;cursor:pointer}
+.dd-opt:hover{background:var(--chip)}
+.dd-opt input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.dd-sep{border-top:1px solid var(--line);margin:4px 0}
+@media (max-width:760px){.dd summary{width:100%}.dd-menu{left:0;right:0}}
+
 </style>
 
+
+@include('navbar')
+
 <div class="app">
-  <aside class="panel" id="panel">
-    <div class="head">
-      <div class="titlerow">
-        <div>
-          <h1>Maldives Boat Routes</h1>
-          <p class="sub">An underserved heat map, official RTL routes, GPS-observed sailings, and every island, harbour, dive site and fishing point from the national registers.</p>
+    <aside class="panel" id="panel">
+        <div class="head">
+        <div class="titlerow">
+            <button class="toggle" id="toggle" aria-expanded="true">Hide panel</button>
         </div>
-        <button class="toggle" id="toggle" aria-expanded="true">Hide panel</button>
-      </div>
-      <div class="search" role="search">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input id="q" type="search" placeholder="Search islands, routes, dive sites, harbours…" autocomplete="off" aria-label="Search islands, routes and places" aria-controls="results" aria-expanded="false">
-        <ul class="results" id="results" role="listbox" hidden></ul>
-      </div>
-      <div class="filters" style="display:flex;flex-direction:column;gap:8px">
-        <div class="chips" id="types" aria-label="Boat types"></div>
-        <div class="row2">
-          <select id="atoll" aria-label="Atoll"></select>
-          <div class="tabs" role="tablist">
-            <button class="tab" role="tab" id="tab-routes" aria-selected="true">Routes</button>
-            <button class="tab" role="tab" id="tab-layers" aria-selected="false">Layers</button>
-            <button class="tab" role="tab" id="tab-under" aria-selected="false">Underserved</button>
-          </div>
+        <div class="search" role="search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input id="q" type="search" placeholder="Search islands, routes, dive sites, harbours…" autocomplete="off" aria-label="Search islands, routes and places" aria-controls="results" aria-expanded="false">
+            <ul class="results" id="results" role="listbox" hidden></ul>
         </div>
-      </div>
-    </div>
-    <div class="body" id="body"></div>
-  </aside>
+
+        <div class="filters" style="display:flex;flex-direction:column;gap:8px">
+            <div class="filters">
+                <details class="dd" id="typesdd">
+                <summary id="types-sum">All route types</summary>
+                <div class="dd-menu" id="types"></div>
+                </details>
+                <select id="atoll" aria-label="Atoll"></select>
+                <div class="tabs" role="tablist">
+                <button class="tab" role="tab" id="tab-routes" aria-selected="true">Routes</button>
+                <button class="tab" role="tab" id="tab-layers" aria-selected="false">Layers</button>
+                <button class="tab" role="tab" id="tab-under" aria-selected="false">Underserved</button>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="body" id="body"></div>
+    </aside>
   <div id="map" aria-label="Map of the Maldives with boat routes and places"></div>
 </div>
 
@@ -1115,13 +1151,24 @@ tabL.addEventListener("click",()=>setView("layers"));
 tabU.addEventListener("click",()=>setView("under"));
 
 // filters
-const typesEl=document.getElementById("types");
-typesEl.innerHTML=Object.entries(TYPES).map(([k,t])=>`<button class="chip" data-type="${k}" aria-pressed="true"><span class="sw ${k}"></span>${t.short}</button>`).join("")
-  +`<button class="chip" data-unv="1" aria-pressed="false" title="Routes added without a source">Unverified (${ROUTES.filter(r=>r.unv).length})</button>`;
-typesEl.addEventListener("click",e=>{const u=e.target.closest("[data-unv]");if(u){state.showUnv=!state.showUnv;u.setAttribute("aria-pressed",String(state.showUnv));render();return;}
-  const c=e.target.closest(".chip");if(!c)return;const k=c.dataset.type;
-  if(state.types.has(k)){state.types.delete(k);c.setAttribute("aria-pressed","false");}else{state.types.add(k);c.setAttribute("aria-pressed","true");}
-  render();});
+const typesEl=document.getElementById("types"), typesDd=document.getElementById("typesdd"), typesSum=document.getElementById("types-sum");
+typesEl.innerHTML=Object.entries(TYPES).map(([k,t])=>`<label class="dd-opt"><input type="checkbox" data-type="${k}" checked><span class="sw ${k}"></span>${t.short}</label>`).join("")
+  +`<div class="dd-sep"></div><label class="dd-opt" title="Routes added without a source"><input type="checkbox" data-unv="1"><span>Unverified (${ROUTES.filter(r=>r.unv).length})</span></label>`;
+function updateTypesLabel(){
+  const n=state.types.size,total=Object.keys(TYPES).length;
+  let t=n===total?"All route types":n===0?"No route types":n+" of "+total+" route types";
+  if(state.showUnv) t+=" + unverified";
+  typesSum.textContent=t;
+}
+typesEl.addEventListener("change",e=>{
+  const c=e.target;
+  if(c.dataset.unv) state.showUnv=c.checked;
+  else if(c.dataset.type) c.checked?state.types.add(c.dataset.type):state.types.delete(c.dataset.type);
+  updateTypesLabel();render();
+});
+document.addEventListener("click",e=>{if(typesDd.open&&!e.target.closest("#typesdd"))typesDd.open=false;});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&typesDd.open){typesDd.open=false;typesSum.focus();}});
+
 const atollEl=document.getElementById("atoll");
 atollEl.innerHTML=`<option value="all">All atolls, north to south</option>`+ATOLLS.map(a=>`<option>${esc(a)}</option>`).join("");
 atollEl.addEventListener("change",()=>{state.atoll=atollEl.value;state.sel=null;render();
