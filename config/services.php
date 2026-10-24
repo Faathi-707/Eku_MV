@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'model' => [
+        'url' => env('MODEL_SERVICE_URL', 'http://127.0.0.1:8000'),
+        'timeout' => (int) env('MODEL_SERVICE_TIMEOUT', 5),
+    ],
+
 ];

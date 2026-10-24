@@ -1,7 +1,5 @@
 <?php
 
-test('the application returns a successful response', function () {
-    $response = $this->get('/');
-
-    $response->assertStatus(200);
+it('redirects guests to login from the dashboard', function () {
+    $this->get('/')->assertRedirect('/login');
 });

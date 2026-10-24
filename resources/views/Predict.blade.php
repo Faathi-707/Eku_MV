@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Maldives Eku_mv - Plan Your Sea Journey</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -410,16 +411,61 @@
         © Maldives Eku_mv - AI Maritime & Travel Safety System
     </footer>
 
+    <!-- Prediction result banner (hidden until a prediction is returned) -->
+    <div id="predictionBanner" class="hidden fixed bottom-6 right-6 max-w-sm glass-card rounded-2xl p-4 shadow-2xl text-sm text-slate-100 border border-cyan-500/40"></div>
+
     <!-- Interactive JS Hook -->
     <script>
-        function handleAnalysis(event) {
+        const CSRF = document.querySelector('meta[name="csrf-token"]')?.content;
+
+        async function handleAnalysis(event) {
             event.preventDefault();
             const from = document.getElementById('from').value;
             const to = document.getElementById('to').value;
             const depDate = document.getElementById('departureDate').value;
-            
-            // Add custom dynamic behavior or fetch request when backend is ready
-            alert(`Analyzing sea conditions from ${from} to ${to} for departure on ${depDate}...`);
+            const banner = document.getElementById('predictionBanner');
+
+            banner.classList.remove('hidden');
+            banner.innerHTML = `<div class="flex items-center gap-2"><i class="fa-solid fa-spinner fa-spin text-cyan-400"></i> Analysing ${from} → ${to}…</div>`;
+
+            // TODO: replace these placeholder weather features with values from a real weather feed.
+            const features = {
+                era5_wind_kmh: 22.5,
+                era5_swh_m: 1.4,
+                era5_tp_mm: 0.3,
+                median_path_length_km: 12.0,
+                day_of_week: new Date(depDate).getDay(),
+            };
+
+            try {
+                const res = await fetch("{{ route('api.predict') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': CSRF,
+                    },
+                    body: JSON.stringify({ route_id: `${from}-${to}`, features }),
+                });
+                const data = await res.json();
+
+                if (data.status === 'ok') {
+                    const pct = data.headline_delta_pct;
+                    const sign = pct >= 0 ? '+' : '';
+                    const warn = data.route_known ? '' : '<div class="text-amber-300 text-xs mt-1"><i class="fa-solid fa-triangle-exclamation"></i> Limited data for this route — estimate only.</div>';
+                    banner.innerHTML = `
+                        <div class="font-bold text-white">${from} → ${to}</div>
+                        <div class="text-2xl font-bold text-cyan-300 mt-1">${sign}${pct.toFixed(1)}% vs usual</div>
+                        <div class="text-xs text-slate-400 mt-1">Headline uses route-mean baseline (model: ${(data.predictions.tree_model * 100).toFixed(1)}%).</div>
+                        ${warn}`;
+                } else if (data.status === 'missing_features') {
+                    banner.innerHTML = `<div class="text-amber-300">Missing weather inputs: ${(data.missing_features || []).join(', ')}</div>`;
+                } else {
+                    banner.innerHTML = `<div class="text-rose-300">Weather prediction unavailable right now.</div>`;
+                }
+            } catch (e) {
+                banner.innerHTML = `<div class="text-rose-300">Could not reach prediction service.</div>`;
+            }
         }
     </script>
 </body>

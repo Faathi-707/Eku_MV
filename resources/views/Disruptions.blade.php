@@ -52,105 +52,56 @@
             </div>
         </div>
 
+        @if (session('status'))
+            <div class="rounded-xl border border-cyan-500/40 bg-cyan-500/10 text-cyan-200 text-xs p-3">
+                {{ session('status') }}
+            </div>
+        @endif
+
         <!-- Drafts List Container -->
         <div class="space-y-4">
-
-            <!-- Draft Card 1 -->
-            <div class="draft-item rounded-2xl p-5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-                <div class="flex items-start gap-4">
-                    <div class="p-3 bg-red-500/20 text-red-400 rounded-xl mt-0.5">
-                        <i class="fa-solid fa-triangle-exclamation text-lg"></i>
-                    </div>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center gap-2.5">
-                            <h2 class="text-base font-bold text-white">Marine Disruption Report</h2>
-                            <span class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Draft</span>
+            @forelse ($drafts as $draft)
+                <div class="draft-item rounded-2xl p-5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 bg-red-500/20 text-red-400 rounded-xl mt-0.5">
+                            <i class="fa-solid fa-triangle-exclamation text-lg"></i>
                         </div>
-                        <p class="text-xs text-cyan-300 font-medium flex items-center gap-1.5">
-                            <i class="fa-solid fa-water text-xs"></i> TSS (Traffic Separation Schemes)
-                        </p>
-                        <div class="flex flex-wrap items-center gap-6 text-xs text-slate-400 pt-1">
-                            <span class="flex items-center gap-1.5"><i class="fa-regular fa-calendar-days text-cyan-400"></i> Last edited: <strong class="text-slate-200">Jun 20, 2025 - 14:32</strong></span>
-                            <span class="flex items-center gap-1.5"><i class="fa-regular fa-clock text-cyan-400"></i> Estimated clearance: <strong class="text-slate-200">3 days</strong></span>
-                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-cyan-400"></i> Affected area: <strong class="text-slate-200">Central Atolls</strong></span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Action Buttons -->
-                <div class="flex items-center gap-2.5 self-end lg:self-center w-full lg:w-auto justify-end">
-                    <a href="{{ url('/report') }}" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
-                        <i class="fa-solid fa-pen"></i> Continue
-                    </a>
-                    <button class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-semibold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-trash-can"></i> Delete
-                    </button>
-                </div>
-            </div>
-
-            <!-- Draft Card 2 -->
-            <div class="draft-item rounded-2xl p-5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-                <div class="flex items-start gap-4">
-                    <div class="p-3 bg-blue-500/20 text-cyan-400 rounded-xl mt-0.5">
-                        <i class="fa-solid fa-water text-lg"></i>
-                    </div>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center gap-2.5">
-                            <h2 class="text-base font-bold text-white">Marine Disruption Report</h2>
-                            <span class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Draft</span>
-                        </div>
-                        <p class="text-xs text-cyan-300 font-medium flex items-center gap-1.5">
-                            <i class="fa-solid fa-anchor text-xs"></i> Negligent Anchorages and Infrastructure Accidents
-                        </p>
-                        <div class="flex flex-wrap items-center gap-6 text-xs text-slate-400 pt-1">
-                            <span class="flex items-center gap-1.5"><i class="fa-regular fa-calendar-days text-cyan-400"></i> Last edited: <strong class="text-slate-200">Jun 19, 2025 - 09:17</strong></span>
-                            <span class="flex items-center gap-1.5"><i class="fa-regular fa-clock text-cyan-400"></i> Estimated clearance: <strong class="text-slate-200">5 days</strong></span>
-                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-cyan-400"></i> Affected area: <strong class="text-slate-200">South Huvadhoo</strong></span>
+                        <div class="space-y-1.5">
+                            <div class="flex items-center gap-2.5">
+                                <h2 class="text-base font-bold text-white">Marine Disruption Report</h2>
+                                <span class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Draft</span>
+                            </div>
+                            <p class="text-xs text-cyan-300 font-medium flex items-center gap-1.5">
+                                <i class="fa-solid fa-water text-xs"></i> {{ $draft->category->label() }}
+                            </p>
+                            <div class="flex flex-wrap items-center gap-6 text-xs text-slate-400 pt-1">
+                                <span class="flex items-center gap-1.5"><i class="fa-regular fa-calendar-days text-cyan-400"></i> Last edited: <strong class="text-slate-200">{{ $draft->updated_at->format('M j, Y - H:i') }}</strong></span>
+                                <span class="flex items-center gap-1.5"><i class="fa-regular fa-clock text-cyan-400"></i> Estimated clearance: <strong class="text-slate-200">{{ $draft->clearance_period }}</strong></span>
+                                @if ($draft->affected_area)
+                                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-cyan-400"></i> Affected area: <strong class="text-slate-200">{{ $draft->affected_area }}</strong></span>
+                                @endif
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- Action Buttons -->
-                <div class="flex items-center gap-2.5 self-end lg:self-center w-full lg:w-auto justify-end">
-                    <a href="{{ url('/report') }}" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
-                        <i class="fa-solid fa-pen"></i> Continue
-                    </a>
-                    <button class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-semibold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-trash-can"></i> Delete
-                    </button>
-                </div>
-            </div>
-
-            <!-- Draft Card 3 -->
-            <div class="draft-item rounded-2xl p-5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-                <div class="flex items-start gap-4">
-                    <div class="p-3 bg-purple-500/20 text-purple-400 rounded-xl mt-0.5">
-                        <i class="fa-solid fa-route text-lg"></i>
-                    </div>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center gap-2.5">
-                            <h2 class="text-base font-bold text-white">Route Update</h2>
-                            <span class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-[10px] font-bold px-2.5 py-0.5 rounded-full">Draft</span>
-                        </div>
-                        <p class="text-xs text-cyan-300 font-medium flex items-center gap-1.5">
-                            <i class="fa-solid fa-signs-post text-xs"></i> Alternative Route Recommendation
-                        </p>
-                        <div class="flex flex-wrap items-center gap-6 text-xs text-slate-400 pt-1">
-                            <span class="flex items-center gap-1.5"><i class="fa-regular fa-calendar-days text-cyan-400"></i> Last edited: <strong class="text-slate-200">Jun 18, 2025 - 16:10</strong></span>
-                            <span class="flex items-center gap-1.5"><i class="fa-regular fa-clock text-cyan-400"></i> Estimated duration: <strong class="text-slate-200">2 hours</strong></span>
-                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-cyan-400"></i> Affected area: <strong class="text-slate-200">Malé – Thulusdhoo</strong></span>
-                        </div>
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-2.5 self-end lg:self-center w-full lg:w-auto justify-end">
+                        <a href="{{ route('report.edit', $draft) }}" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
+                            <i class="fa-solid fa-pen"></i> Continue
+                        </a>
+                        <form method="POST" action="{{ route('disruptions.destroy', $draft) }}" onsubmit="return confirm('Delete this draft?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-semibold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-trash-can"></i> Delete
+                            </button>
+                        </form>
                     </div>
                 </div>
-                <!-- Action Buttons -->
-                <div class="flex items-center gap-2.5 self-end lg:self-center w-full lg:w-auto justify-end">
-                    <a href="{{ url('/report') }}" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
-                        <i class="fa-solid fa-pen"></i> Continue
-                    </a>
-                    <button class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-semibold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-trash-can"></i> Delete
-                    </button>
+            @empty
+                <div class="rounded-2xl border border-blue-900/50 bg-[#0b2b52]/40 p-8 text-center text-sm text-slate-400">
+                    No drafts yet. <a href="{{ route('report') }}" class="text-cyan-400 hover:underline">Create a new report</a>.
                 </div>
-            </div>
-
+            @endforelse
         </div>
 
     </main>

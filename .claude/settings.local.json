@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php --version)",
+      "Bash(composer --version)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan test --compact tests/Feature/Auth 2>&1 | Select-Object -Last 25)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan test --compact tests/Feature/Auth 2>&1 | Select-Object -Last 20)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; vendor/bin/pint --dirty --format agent 2>&1 | Select-Object -Last 15)",
+      "PowerShell(npm install -D tailwindcss@^4.0.0 2>&1)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan make:model DisruptionReport -mfp --no-interaction 2>&1)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan make:policy DisruptionReportPolicy --model=DisruptionReport --no-interaction 2>&1)",
+      "PowerShell(Rename-Item database/migrations/2026_10_24_083609_create_disruption_report_table.php 2026_10_24_083609_create_disruption_reports_table.php)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan make:enum DisruptionCategory --string --no-interaction; php artisan make:enum DisruptionReportStatus --string --no-interaction 2>&1)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan make:request StoreDisruptionReportRequest --no-interaction; php artisan make:controller DisruptionReportController --no-interaction 2>&1)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan migrate --no-interaction 2>&1 | Select-Object -Last 10)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan make:test --pest DisruptionReportTest --no-interaction 2>&1)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan test --compact tests/Feature/DisruptionReportTest.php 2>&1 | Select-Object -Last 25)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan migrate:fresh --no-interaction 2>&1 | Select-Object -Last 10; php artisan test --compact tests/Feature/DisruptionReportTest.php 2>&1 | Select-Object -Last 5)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; vendor/bin/pint --dirty --format agent 2>&1 | Select-Object -Last 5; php artisan test --compact 2>&1 | Select-Object -Last 5)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; php artisan test --compact 2>&1 | Select-Object -Last 5)",
+      "PowerShell($env:PATH = \"C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin;C:\\\\Users\\\\User\\\\.config\\\\herd\\\\bin\\\\php85;$env:PATH\"; vendor/bin/pint --dirty --format agent 2>&1 | Select-Object -Last 3; php artisan test --compact 2>&1 | Select-Object -Last 5)"
+    ]
+  }
+}

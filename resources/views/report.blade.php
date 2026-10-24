@@ -99,9 +99,23 @@
                 </div>
             </div>
 
+            @if ($errors->any())
+                <div class="rounded-xl border border-red-500/40 bg-red-500/10 text-red-300 text-xs p-4">
+                    <p class="font-semibold mb-1">Please fix the following:</p>
+                    <ul class="list-disc list-inside space-y-0.5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!-- Form Body -->
-            <form action="#" method="POST" class="space-y-6">
+            <form action="{{ $report ? route('report.update', $report) : route('report.store') }}" method="POST" class="space-y-6">
                 @csrf
+                @if ($report)
+                    @method('PUT')
+                @endif
 
                 <!-- Category Field -->
                 <div>
@@ -109,12 +123,12 @@
                         Category <span class="text-red-400">*</span>
                     </label>
                     <div class="relative">
-                        <select required class="w-full form-input-box rounded-xl px-4 py-3 text-xs md:text-sm appearance-none cursor-pointer">
-                            <option value="" disabled selected class="bg-[#0b284f]">Select disruption category</option>
-                            <option value="tss" class="bg-[#0b284f]">Traffic Separation Schemes (TSS)</option>
-                            <option value="eez" class="bg-[#0b284f]">Exclusive Economic Zone (EEZ)</option>
-                            <option value="anchorages" class="bg-[#0b284f]">Negligent Anchorages and Infrastructure Accidents</option>
-                            <option value="regulatory" class="bg-[#0b284f]">Overloading and Safety Regulatory Halts</option>
+                        <select name="category" required class="w-full form-input-box rounded-xl px-4 py-3 text-xs md:text-sm appearance-none cursor-pointer">
+                            <option value="" disabled @selected(! old('category', $report?->category?->value)) class="bg-[#0b284f]">Select disruption category</option>
+                            <option value="tss" @selected(old('category', $report?->category?->value) === 'tss') class="bg-[#0b284f]">Traffic Separation Schemes (TSS)</option>
+                            <option value="eez" @selected(old('category', $report?->category?->value) === 'eez') class="bg-[#0b284f]">Exclusive Economic Zone (EEZ)</option>
+                            <option value="anchorages" @selected(old('category', $report?->category?->value) === 'anchorages') class="bg-[#0b284f]">Negligent Anchorages and Infrastructure Accidents</option>
+                            <option value="regulatory" @selected(old('category', $report?->category?->value) === 'regulatory') class="bg-[#0b284f]">Overloading and Safety Regulatory Halts</option>
                         </select>
                         <i class="fa-solid fa-chevron-down absolute right-4 top-3.5 text-xs text-slate-400 pointer-events-none"></i>
                     </div>
@@ -128,7 +142,7 @@
                     <label class="block text-xs font-semibold text-slate-300 mb-1.5">
                         Cause <span class="text-red-400">*</span>
                     </label>
-                    <textarea rows="3" required placeholder="Describe what happened and the source of the report..." class="w-full form-input-box rounded-xl p-4 text-xs md:text-sm resize-none"></textarea>
+                    <textarea name="cause" rows="3" required placeholder="Describe what happened and the source of the report..." class="w-full form-input-box rounded-xl p-4 text-xs md:text-sm resize-none">{{ old('cause', $report?->cause) }}</textarea>
                 </div>
 
                 <!-- Expected Clearance Period Grid -->
@@ -139,12 +153,12 @@
                         </label>
                         <span class="block text-[11px] text-slate-400 mb-1">Estimated duration</span>
                         <div class="relative">
-                            <select required class="w-full form-input-box rounded-xl px-4 py-3 text-xs md:text-sm appearance-none cursor-pointer">
-                                <option value="" disabled selected class="bg-[#0b284f]">Select duration</option>
-                                <option value="24h" class="bg-[#0b284f]">Under 24 hours</option>
-                                <option value="48h" class="bg-[#0b284f]">1–2 days</option>
-                                <option value="week" class="bg-[#0b284f]">3–7 days</option>
-                                <option value="extended" class="bg-[#0b284f]">Indefinite / Extended</option>
+                            <select name="clearance_period" required class="w-full form-input-box rounded-xl px-4 py-3 text-xs md:text-sm appearance-none cursor-pointer">
+                                <option value="" disabled @selected(! old('clearance_period', $report?->clearance_period)) class="bg-[#0b284f]">Select duration</option>
+                                <option value="24h" @selected(old('clearance_period', $report?->clearance_period) === '24h') class="bg-[#0b284f]">Under 24 hours</option>
+                                <option value="48h" @selected(old('clearance_period', $report?->clearance_period) === '48h') class="bg-[#0b284f]">1–2 days</option>
+                                <option value="week" @selected(old('clearance_period', $report?->clearance_period) === 'week') class="bg-[#0b284f]">3–7 days</option>
+                                <option value="extended" @selected(old('clearance_period', $report?->clearance_period) === 'extended') class="bg-[#0b284f]">Indefinite / Extended</option>
                             </select>
                             <i class="fa-solid fa-chevron-down absolute right-4 top-3.5 text-xs text-slate-400 pointer-events-none"></i>
                         </div>
@@ -154,7 +168,7 @@
                         <label class="block text-xs font-semibold text-slate-300 mb-1.5 opacity-0 hidden md:block">Clear by</label>
                         <span class="block text-[11px] text-slate-400 mb-1 md:mt-5">Expected clear by</span>
                         <div class="relative flex items-center">
-                            <input type="datetime-local" class="w-full form-input-box rounded-xl px-4 py-2.5 text-xs md:text-sm text-slate-200 cursor-pointer">
+                            <input type="datetime-local" name="clear_by" value="{{ old('clear_by', $report?->clear_by?->format('Y-m-d\TH:i')) }}" class="w-full form-input-box rounded-xl px-4 py-2.5 text-xs md:text-sm text-slate-200 cursor-pointer">
                         </div>
                     </div>
                 </div>
@@ -164,7 +178,7 @@
                     <label class="block text-xs font-semibold text-slate-300 mb-1.5">
                         Alternative routes <span class="text-red-400">*</span>
                     </label>
-                    <textarea rows="3" required placeholder="List safe alternative routes or waypoints vessels should follow..." class="w-full form-input-box rounded-xl p-4 text-xs md:text-sm resize-none"></textarea>
+                    <textarea name="alternative_routes" rows="3" placeholder="List safe alternative routes or waypoints vessels should follow..." class="w-full form-input-box rounded-xl p-4 text-xs md:text-sm resize-none">{{ old('alternative_routes', $report?->alternative_routes) }}</textarea>
                 </div>
 
                 <!-- Other Information Field -->
@@ -172,7 +186,15 @@
                     <label class="block text-xs font-semibold text-slate-300 mb-1.5">
                         Other information <span class="text-slate-500 font-normal">(Optional)</span>
                     </label>
-                    <textarea rows="3" placeholder="Additional instructions, affected vessels, coordinates, or contact details..." class="w-full form-input-box rounded-xl p-4 text-xs md:text-sm resize-none"></textarea>
+                    <textarea name="other_info" rows="3" placeholder="Additional instructions, affected vessels, coordinates, or contact details..." class="w-full form-input-box rounded-xl p-4 text-xs md:text-sm resize-none">{{ old('other_info', $report?->other_info) }}</textarea>
+                </div>
+
+                <!-- Affected area label -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5">
+                        Affected area <span class="text-slate-500 font-normal">(Optional)</span>
+                    </label>
+                    <input type="text" name="affected_area" value="{{ old('affected_area', $report?->affected_area) }}" placeholder="e.g. Central Atolls, Malé – Thulusdhoo" class="w-full form-input-box rounded-xl px-4 py-3 text-xs md:text-sm">
                 </div>
 
                 <!-- Mark Affected Area on Map Box -->
@@ -232,19 +254,19 @@
 
                 <!-- Verification Checkbox -->
                 <div class="flex items-center gap-3 pt-2">
-                    <input type="checkbox" id="verifyCheck" required class="w-4 h-4 rounded bg-[#0b284f] border-blue-900 text-cyan-500 focus:ring-cyan-500 cursor-pointer">
+                    <input type="checkbox" name="verified" value="1" id="verifyCheck" class="w-4 h-4 rounded bg-[#0b284f] border-blue-900 text-cyan-500 focus:ring-cyan-500 cursor-pointer">
                     <label for="verifyCheck" class="text-xs text-slate-300 font-medium cursor-pointer">
-                        I confirm this report has been verified by my agency.
+                        I confirm this report has been verified by my agency. (Required to publish.)
                     </label>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-blue-900/50">
-                    <button type="button" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-transparent hover:bg-blue-900/30 text-slate-300 border border-blue-900/60 font-semibold text-xs transition duration-200 flex items-center justify-center gap-2">
+                    <button type="submit" name="intent" value="draft" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-transparent hover:bg-blue-900/30 text-slate-300 border border-blue-900/60 font-semibold text-xs transition duration-200 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-floppy-disk text-cyan-400"></i> Save draft
                     </button>
-                    
-                    <button type="submit" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition duration-200 shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2">
+
+                    <button type="submit" name="intent" value="publish" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition duration-200 shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-paper-plane"></i> Publish to Notifications
                     </button>
                 </div>
