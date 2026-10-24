@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\AlertController;
 use App\Http\Controllers\Api\PredictionController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\CommunityPostController;
 use App\Http\Controllers\DisruptionReportController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -28,9 +31,16 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/api/predict', [PredictionController::class, 'predict'])->name('api.predict');
 
+    Route::get('/community', [CommunityPostController::class, 'index'])
+        ->middleware('role:citizen,official,admin')
+        ->name('community');
+
     Route::middleware('role:citizen')->group(function () {
+        Route::post('/community', [CommunityPostController::class, 'store'])->name('community.store');
         Route::view('/predict', 'Citizen.Predict')->name('predict');
-        Route::view('/notifications', 'Citizen.notification')->name('notifications');
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
+        Route::get('/notifications/{notification}', [NotificationController::class, 'show'])->name('notifications.show');
+        Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
         Route::view('/profile', 'Citizen.profile')->name('profile');
     });
 
@@ -42,5 +52,8 @@ Route::middleware('auth')->group(function () {
         Route::put('/reports/{disruptionReport}', [DisruptionReportController::class, 'update'])->name('report.update');
         Route::delete('/disruptions/{disruptionReport}', [DisruptionReportController::class, 'destroy'])->name('disruptions.destroy');
         Route::view('/profile', 'Official.Oprofile')->name('official.profile');
+        Route::get('/alerts', [AlertController::class, 'index'])->name('alerts');
+        Route::get('/alerts/{alert}', [AlertController::class, 'show'])->name('alerts.show');
+        Route::patch('/community/{communityPost}/status', [CommunityPostController::class, 'updateStatus'])->name('community.status');
     });
 });

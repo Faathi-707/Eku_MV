@@ -40,4 +40,9 @@ return [
         'timeout' => (int) env('MODEL_SERVICE_TIMEOUT', 5),
     ],
 
+    'carto' => [
+        'key' => env('CARTO_BASEMAPS_KEY'),
+        'style' => env('CARTO_BASEMAP_STYLE', 'voyager'),
+    ],
+
 ];

@@ -36,4 +36,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(DisruptionReport::class);
     }
+
+    public function communityPosts(): HasMany
+    {
+        return $this->hasMany(CommunityPost::class);
+    }
 }

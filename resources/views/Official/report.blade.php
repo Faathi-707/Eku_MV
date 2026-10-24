@@ -66,7 +66,23 @@
             color: #071930;
             border-color: #00d2ff;
         }
+
+        #area-map { background: #061830; border-radius: 1rem; }
+        #area-map .leaflet-control-scale-line {
+            background: rgba(7, 25, 48, 0.75);
+            border-color: #94a3b8;
+            color: #cbd5e1;
+            font-size: 10px;
+        }
+        #area-map .leaflet-control-attribution {
+            background: rgba(7, 25, 48, 0.7);
+            color: #64748b;
+            font-size: 9px;
+        }
+        #area-map .leaflet-control-attribution a { color: #94a3b8; }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.17.0/dist/leaflet-geoman.css">
 </head>
 <body class="min-h-screen flex flex-col">
 
@@ -203,53 +219,41 @@
                         <i class="fa-solid fa-location-dot text-cyan-400"></i> Mark affected area on map <span class="text-red-400">*</span>
                     </label>
                     
-                    <div class="map-canvas-bg rounded-2xl border border-blue-900/60 p-4 h-72 md:h-80 relative flex items-center justify-center">
-                        
+                    @php $markedArea = old('geojson', $report?->geojson); @endphp
+                    <input type="hidden" name="geojson" id="geojson-input" value="{{ is_array($markedArea) ? json_encode($markedArea) : $markedArea }}">
+
+                    <div class="map-canvas-bg rounded-2xl border border-blue-900/60 h-80 md:h-96 relative">
+                        <div id="area-map" class="absolute inset-0"></div>
+
                         <!-- Map Toolbar (Left) -->
-                        <div class="absolute left-4 top-4 flex flex-col gap-2 z-10">
-                            <button type="button" title="Select" class="map-tool-btn active w-9 h-9 rounded-xl flex items-center justify-center shadow"><i class="fa-solid fa-arrow-pointer text-xs"></i></button>
-                            <button type="button" title="Circle an area" class="map-tool-btn w-9 h-9 rounded-xl flex items-center justify-center shadow"><i class="fa-regular fa-circle text-xs"></i></button>
-                            <button type="button" title="Draw a boundary" class="map-tool-btn w-9 h-9 rounded-xl flex items-center justify-center shadow"><i class="fa-regular fa-hexagon text-xs"></i></button>
-                            <button type="button" title="Pen/Freehand" class="map-tool-btn w-9 h-9 rounded-xl flex items-center justify-center shadow"><i class="fa-solid fa-pen text-xs"></i></button>
-                            <button type="button" title="Delete selection" class="map-tool-btn w-9 h-9 rounded-xl flex items-center justify-center shadow hover:text-red-400"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                        <div class="absolute left-4 top-4 flex flex-col gap-2 z-[1000]">
+                            <button type="button" data-map-tool="select" title="Select: move around the map" class="map-tool-btn active w-9 h-9 rounded-xl flex items-center justify-center shadow"><i class="fa-solid fa-arrow-pointer text-xs"></i></button>
+                            <button type="button" data-map-tool="circle" title="Circle an area" class="map-tool-btn w-9 h-9 rounded-xl flex items-center justify-center shadow"><i class="fa-regular fa-circle text-xs"></i></button>
+                            <button type="button" data-map-tool="polygon" title="Draw a boundary" class="map-tool-btn w-9 h-9 rounded-xl flex items-center justify-center shadow"><i class="fa-solid fa-draw-polygon text-xs"></i></button>
+                            <button type="button" data-map-tool="edit" title="Edit the marked area" class="map-tool-btn w-9 h-9 rounded-xl flex items-center justify-center shadow"><i class="fa-solid fa-pen text-xs"></i></button>
+                            <button type="button" data-map-action="clear" title="Delete the marked area" class="map-tool-btn w-9 h-9 rounded-xl flex items-center justify-center shadow hover:text-red-400"><i class="fa-solid fa-trash-can text-xs"></i></button>
                         </div>
 
                         <!-- Map Controls (Top Right & Bottom Right) -->
-                        <div class="absolute right-4 top-4 z-10">
-                            <button type="button" title="Map Layers" class="map-tool-btn w-9 h-9 rounded-xl flex items-center justify-center shadow"><i class="fa-solid fa-map text-xs"></i></button>
+                        <div class="absolute right-4 top-4 z-[1000]">
+                            <button type="button" data-map-action="layers" title="Switch to satellite view" class="map-tool-btn w-9 h-9 rounded-xl flex items-center justify-center shadow"><i class="fa-solid fa-map text-xs"></i></button>
                         </div>
 
-                        <div class="absolute right-4 bottom-14 flex flex-col gap-1 z-10">
-                            <button type="button" title="Zoom In" class="map-tool-btn w-9 h-8 rounded-t-xl flex items-center justify-center shadow"><i class="fa-solid fa-plus text-xs"></i></button>
-                            <button type="button" title="Zoom Out" class="map-tool-btn w-9 h-8 rounded-b-xl flex items-center justify-center shadow"><i class="fa-solid fa-minus text-xs"></i></button>
+                        <div class="absolute right-4 bottom-16 flex flex-col gap-1 z-[1000]">
+                            <button type="button" data-map-action="zoom-in" title="Zoom in" class="map-tool-btn w-9 h-8 rounded-t-xl flex items-center justify-center shadow"><i class="fa-solid fa-plus text-xs"></i></button>
+                            <button type="button" data-map-action="zoom-out" title="Zoom out" class="map-tool-btn w-9 h-8 rounded-b-xl flex items-center justify-center shadow"><i class="fa-solid fa-minus text-xs"></i></button>
                         </div>
 
-                        <!-- Scale & Clear Selection -->
-                        <div class="absolute left-4 bottom-4 text-[10px] text-slate-400 flex items-center gap-3">
-                            <div class="flex items-center gap-1 bg-slate-900/60 px-2 py-1 rounded border border-blue-900/40">
-                                <span>0</span>
-                                <div class="w-12 h-1 bg-slate-400 relative"></div>
-                                <span>20</span>
-                                <span class="ml-1">40 km</span>
-                            </div>
-                        </div>
-
-                        <div class="absolute right-4 bottom-4 z-10">
-                            <button type="button" class="bg-[#0b284f]/90 hover:bg-blue-900/80 border border-blue-900 text-slate-200 text-xs px-3 py-2 rounded-xl flex items-center gap-2 shadow">
+                        <div class="absolute right-4 bottom-4 z-[1000]">
+                            <button type="button" data-map-action="clear" class="bg-[#0b284f]/90 hover:bg-blue-900/80 border border-blue-900 text-slate-200 text-xs px-3 py-2 rounded-xl flex items-center gap-2 shadow">
                                 <i class="fa-solid fa-rotate-left text-cyan-400"></i> Clear selection
                             </button>
                         </div>
 
-                        <!-- Simulated Highlighted Zone on Map -->
-                        <div class="relative w-full h-full flex items-center justify-center pointer-events-none">
-                            <div class="absolute w-32 h-32 rounded-full border-2 border-dashed border-red-500 bg-red-500/20 flex items-center justify-center animate-pulse">
-                                <div class="bg-red-600/90 text-white p-2 rounded-xl shadow-lg flex items-center gap-1.5 text-xs pointer-events-auto">
-                                    <i class="fa-solid fa-triangle-exclamation"></i> Disrupted area
-                                </div>
-                            </div>
-                        </div>
-
+                        <!-- Drawing hint -->
+                        <div id="map-hint" class="absolute left-1/2 -translate-x-1/2 top-4 z-[1000] bg-[#071930]/90 border border-cyan-500/40 text-cyan-200 text-[11px] px-3 py-1.5 rounded-full shadow pointer-events-none" hidden></div>
                     </div>
+                    <p class="text-[11px] text-slate-400 mt-2">Required to publish. Use the circle or boundary tool to mark the disrupted zone.</p>
                 </div>
 
                 <!-- Verification Checkbox -->
@@ -281,6 +285,146 @@
     <footer class="py-4 text-center text-xs text-slate-500 border-t border-blue-950 mt-8">
         © Maldives Eku_mv - AI Maritime & Travel Safety System
     </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@2.17.0/dist/leaflet-geoman.js"></script>
+    <script>
+        (() => {
+            const areaStyle = { color: '#ef4444', weight: 2, dashArray: '6 4', fillColor: '#ef4444', fillOpacity: 0.2 };
+            const geojsonInput = document.getElementById('geojson-input');
+            const hint = document.getElementById('map-hint');
+
+            const map = L.map('area-map', { zoomControl: false, attributionControl: true }).setView([3.2, 73.22], 7);
+
+            const baseLayers = {
+                dark: L.tileLayer(@json('https://basemaps.cartocdn.com/rastertiles/'.config('services.carto.style').'/{z}/{x}/{y}.png?key='.config('services.carto.key')), {
+                    maxZoom: 19,
+                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+                }),
+                satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    maxZoom: 19,
+                    attribution: 'Tiles &copy; Esri',
+                }),
+            };
+            let activeBase = 'dark';
+            baseLayers.dark.addTo(map);
+
+            L.control.scale({ position: 'bottomleft', imperial: false }).addTo(map);
+            map.pm.setGlobalOptions({ pathOptions: areaStyle, templineStyle: areaStyle, hintlineStyle: { color: '#ef4444', dashArray: '4 4' } });
+
+            let areaLayer = null;
+
+            /**
+             * Circles are not part of the GeoJSON spec, so they are stored as a Point with a radius in metres.
+             */
+            const toGeojson = (layer) => {
+                if (layer instanceof L.Circle) {
+                    const center = layer.getLatLng();
+
+                    return {
+                        type: 'Feature',
+                        geometry: { type: 'Point', coordinates: [center.lng, center.lat] },
+                        properties: { shape: 'circle', radius: Math.round(layer.getRadius()) },
+                    };
+                }
+
+                return { ...layer.toGeoJSON(), properties: { shape: 'polygon' } };
+            };
+
+            const fromGeojson = (feature) => {
+                if (feature.properties?.shape === 'circle') {
+                    const [lng, lat] = feature.geometry.coordinates;
+
+                    return L.circle([lat, lng], { ...areaStyle, radius: feature.properties.radius });
+                }
+
+                return L.polygon(feature.geometry.coordinates[0].map(([lng, lat]) => [lat, lng]), areaStyle);
+            };
+
+            const saveArea = () => {
+                geojsonInput.value = areaLayer ? JSON.stringify(toGeojson(areaLayer)) : '';
+            };
+
+            const setArea = (layer) => {
+                if (areaLayer && areaLayer !== layer) {
+                    map.removeLayer(areaLayer);
+                }
+                areaLayer = layer;
+                layer.on('pm:edit', saveArea);
+                saveArea();
+            };
+
+            const showHint = (text) => {
+                hint.textContent = text ?? '';
+                hint.hidden = ! text;
+            };
+
+            const toolButtons = document.querySelectorAll('[data-map-tool]');
+            const activateTool = (tool) => {
+                map.pm.disableDraw();
+                map.pm.disableGlobalEditMode();
+                toolButtons.forEach((button) => button.classList.toggle('active', button.dataset.mapTool === tool));
+
+                if (tool === 'circle') {
+                    map.pm.enableDraw('Circle');
+                    showHint('Click the centre of the zone, then click again to set its size.');
+                } else if (tool === 'polygon') {
+                    map.pm.enableDraw('Polygon');
+                    showHint('Click to add points. Click the first point to close the boundary.');
+                } else if (tool === 'edit') {
+                    if (! areaLayer) {
+                        showHint('Draw an area first, then use the pen to adjust it.');
+                        setTimeout(() => activateTool('select'), 2000);
+
+                        return;
+                    }
+                    map.pm.enableGlobalEditMode();
+                    showHint('Drag the handles to adjust the area. Choose Select when done.');
+                } else {
+                    showHint(null);
+                }
+            };
+
+            map.on('pm:create', ({ layer }) => {
+                setArea(layer);
+                activateTool('select');
+            });
+
+            toolButtons.forEach((button) => button.addEventListener('click', () => activateTool(button.dataset.mapTool)));
+
+            document.querySelectorAll('[data-map-action]').forEach((button) => button.addEventListener('click', () => {
+                const action = button.dataset.mapAction;
+
+                if (action === 'clear') {
+                    if (areaLayer) {
+                        map.removeLayer(areaLayer);
+                        areaLayer = null;
+                        saveArea();
+                    }
+                    activateTool('select');
+                } else if (action === 'zoom-in') {
+                    map.zoomIn();
+                } else if (action === 'zoom-out') {
+                    map.zoomOut();
+                } else if (action === 'layers') {
+                    map.removeLayer(baseLayers[activeBase]);
+                    activeBase = activeBase === 'dark' ? 'satellite' : 'dark';
+                    baseLayers[activeBase].addTo(map);
+                    button.title = activeBase === 'dark' ? 'Switch to satellite view' : 'Switch to street map';
+                }
+            }));
+
+            if (geojsonInput.value) {
+                try {
+                    const layer = fromGeojson(JSON.parse(geojsonInput.value)).addTo(map);
+                    setArea(layer);
+                    map.fitBounds(layer.getBounds(), { padding: [40, 40], maxZoom: 12 });
+                } catch {
+                    geojsonInput.value = '';
+                }
+            }
+        })();
+    </script>
 
 </body>
 </html>

@@ -30,7 +30,7 @@
             </div>
 
             <!-- Add New Report Button linking to the form page -->
-            <a href="{{ url('/report') }}" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs px-5 py-3 rounded-xl transition duration-200 flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 whitespace-nowrap self-start md:self-auto">
+            <a href="{{ route('report') }}" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs px-5 py-3 rounded-xl transition duration-200 flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 whitespace-nowrap self-start md:self-auto">
                 <i class="fa-solid fa-plus"></i> Add New Report
             </a>
         </div>
@@ -38,12 +38,7 @@
         <!-- Filters and Search Bar Section -->
         <div class="flex flex-col lg:flex-row items-center justify-between gap-4 pt-2">
             <!-- Category Filter Pills -->
-            <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-                <button class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold text-xs px-5 py-2 rounded-full transition shadow">All Drafts</button>
-                <button class="bg-[#0b2b52] hover:bg-blue-900/60 text-slate-300 border border-blue-900/60 font-medium text-xs px-4 py-2 rounded-full transition">Marine Disruption Reports</button>
-                <button class="bg-[#0b2b52] hover:bg-blue-900/60 text-slate-300 border border-blue-900/60 font-medium text-xs px-4 py-2 rounded-full transition">Route Updates</button>
-                <button class="bg-[#0b2b52] hover:bg-blue-900/60 text-slate-300 border border-blue-900/60 font-medium text-xs px-4 py-2 rounded-full transition">System Updates</button>
-            </div>
+            <x-category-filter all-label="All Drafts" class="w-full lg:w-auto" />
 
             <!-- Search Drafts Input -->
             <div class="relative w-full lg:w-72">

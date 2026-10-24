@@ -6,18 +6,16 @@
     @auth
       @if(auth()->user()->role === 'citizen')
         <a href="{{ route('predict') }}" @class(['active' => request()->routeIs('predict')])>Predict</a>
+        <a href="{{ route('community') }}" @class(['active' => request()->routeIs('community')])>Community</a>
         <a href="{{ route('notifications') }}" @class(['active' => request()->routeIs('notifications')])>Notification</a>
         <a href="{{ route('profile') }}" @class(['active' => request()->routeIs('profile')])>Profile</a>
       @else
         <a href="{{ route('disruptions') }}" @class(['active' => request()->routeIs('disruptions')])>Disruptions</a>
         <a href="{{ route('report') }}" @class(['active' => request()->routeIs('report')])>Reports</a>
+        <a href="{{ route('community') }}" @class(['active' => request()->routeIs('community')])>Community</a>
+        <a href="{{ route('alerts') }}" @class(['active' => request()->routeIs('alerts')])>Alerts</a>
         <a href="{{ route('official.profile') }}" @class(['active' => request()->routeIs('official.profile')])>Profile</a>
       @endif
-
-      <form method="POST" action="{{ route('logout') }}" style="display:inline;margin:0">
-        @csrf
-        <button type="submit" style="background:none;border:0;color:var(--muted);font-size:14px;font-weight:600;padding:6px 12px;border-radius:999px;cursor:pointer;font-family:inherit">Logout</button>
-      </form>
     @endauth
 
     @guest

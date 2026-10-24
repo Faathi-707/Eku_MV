@@ -215,6 +215,23 @@
                     </div>
                 </a>
 
+                <!-- Logout Button -->
+                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                    @csrf
+                    <button type="submit" class="setting-row flex items-center justify-between p-4 rounded-xl border border-transparent hover:border-red-900/60 cursor-pointer w-full text-left">
+                        <div class="flex items-center gap-4">
+                            <div class="p-2.5 bg-red-500/10 text-red-400 rounded-xl">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-semibold text-red-400">Logout</h3>
+                                <p class="text-xs text-slate-400">End your current session.</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i>
+                    </button>
+                </form>
+
             </div>
 
         </div>

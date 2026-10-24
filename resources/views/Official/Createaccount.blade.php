@@ -74,47 +74,10 @@
             </div>
 
             <!-- Registration Form -->
-            <form action="#" method="POST" class="space-y-8">
+            <form action="{{ route('official.createaccount.store') }}" method="POST" class="space-y-8">
                 @csrf
 
-                <!-- SECTION 1: Organization Details -->
-                <div class="space-y-5">
-                    <div class="border-t border-blue-900/60 pt-4">
-                        <h2 class="text-sm font-bold text-cyan-400">Organization details</h2>
-                    </div>
-
-                    <!-- Organization / Agency Name -->
-                    <div class="space-y-1.5">
-                        <label for="org_name" class="block text-xs font-semibold text-slate-200">Organization / agency name</label>
-                        <input type="text" id="org_name" name="org_name" required placeholder="Enter organization / agency name" class="auth-input w-full px-4 py-3 rounded-xl text-xs md:text-sm font-medium">
-                    </div>
-
-                    <!-- Department -->
-                    <div class="space-y-1.5">
-                        <label for="department" class="block text-xs font-semibold text-slate-200">Department</label>
-                        <input type="text" id="department" name="department" required placeholder="Enter department" class="auth-input w-full px-4 py-3 rounded-xl text-xs md:text-sm font-medium">
-                    </div>
-
-                    <!-- Official Work Email -->
-                    <div class="space-y-1.5">
-                        <label for="work_email" class="block text-xs font-semibold text-slate-200">Official work email</label>
-                        <input type="email" id="work_email" name="work_email" required placeholder="Enter official work email" class="auth-input w-full px-4 py-3 rounded-xl text-xs md:text-sm font-medium">
-                    </div>
-
-                    <!-- Office Phone Number -->
-                    <div class="space-y-1.5">
-                        <label for="office_phone" class="block text-xs font-semibold text-slate-200">Office phone number</label>
-                        <input type="tel" id="office_phone" name="office_phone" required placeholder="Enter office phone number" class="auth-input w-full px-4 py-3 rounded-xl text-xs md:text-sm font-medium">
-                    </div>
-
-                    <!-- Office Address / Island -->
-                    <div class="space-y-1.5">
-                        <label for="office_address" class="block text-xs font-semibold text-slate-200">Office address / island</label>
-                        <input type="text" id="office_address" name="office_address" required placeholder="Enter office address / island" class="auth-input w-full px-4 py-3 rounded-xl text-xs md:text-sm font-medium">
-                    </div>
-                </div>
-
-                <!-- SECTION 2: Account Administrator -->
+                <!-- SECTION 1: Account Administrator -->
                 <div class="space-y-5">
                     <div class="border-t border-blue-900/60 pt-4 flex items-center justify-between">
                         <h2 class="text-sm font-bold text-cyan-400">Account administrator</h2>
@@ -123,20 +86,14 @@
 
                     <!-- Official's Full Name -->
                     <div class="space-y-1.5">
-                        <label for="admin_name" class="block text-xs font-semibold text-slate-200">Official's full name</label>
-                        <input type="text" id="admin_name" name="admin_name" required placeholder="Enter official's full name" class="auth-input w-full px-4 py-3 rounded-xl text-xs md:text-sm font-medium">
-                    </div>
-
-                    <!-- Job Title / Position -->
-                    <div class="space-y-1.5">
-                        <label for="job_title" class="block text-xs font-semibold text-slate-200">Job title / position</label>
-                        <input type="text" id="job_title" name="job_title" required placeholder="Enter job title / position" class="auth-input w-full px-4 py-3 rounded-xl text-xs md:text-sm font-medium">
+                        <label for="name" class="block text-xs font-semibold text-slate-200">Official's full name</label>
+                        <input type="text" id="name" name="name" required placeholder="Enter official's full name" class="auth-input w-full px-4 py-3 rounded-xl text-xs md:text-sm font-medium">
                     </div>
 
                     <!-- Official Contact Email -->
                     <div class="space-y-1.5">
-                        <label for="contact_email" class="block text-xs font-semibold text-slate-200">Official contact email</label>
-                        <input type="email" id="contact_email" name="contact_email" required placeholder="Enter official contact email" class="auth-input w-full px-4 py-3 rounded-xl text-xs md:text-sm font-medium">
+                        <label for="email" class="block text-xs font-semibold text-slate-200">Official contact email</label>
+                        <input type="email" id="email" name="email" required placeholder="Enter official contact email" class="auth-input w-full px-4 py-3 rounded-xl text-xs md:text-sm font-medium">
                     </div>
 
                     <!-- Password -->
