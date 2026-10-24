@@ -276,7 +276,7 @@ select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px
 </style>
 
 
-@include('navbar')
+@include('Both.navbar')
 
 <div class="app">
     <aside class="panel" id="panel">

@@ -71,7 +71,7 @@
 <body class="min-h-screen flex flex-col">
 
     <!-- Navigation Bar -->
-    @include('navbar')
+    @include('Both.navbar')
 
     <!-- Main Content Container -->
     <main class="max-w-4xl mx-auto w-full px-4 py-8 flex-grow space-y-6">
